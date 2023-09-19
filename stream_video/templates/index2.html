@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Multiple Video Streaming</title>
+</head>
+<body>
+    <h1>Video</h1>
+    <div id="videoContainer" style="display: none;">
+        <!-- Video player inside a container that is initially hidden -->
+        <img id="videoPlayer" src="{{ url_for('video_feed1') }}" width="480" height="360" />
+    </div>
+
+    <!-- Button to toggle the video container and video buttons -->
+    <button onclick="toggleVideoContainer()" id="toggleButton">Parking</button>
+
+    <!-- Buttons to switch between video feeds (only visible when the video container is shown) -->
+    <div id="videoButtons" style="display: none;">
+        <button onclick="changeVideo('{{ url_for('video_feed1') }}')">Camera 1</button>
+        <button onclick="changeVideo('{{ url_for('video_feed2') }}')">Camera 2</button>
+        <button onclick="changeVideo('{{ url_for('video_feed3') }}')">Camera 3</button>
+    </div>
+
+    <script>
+        let isVideoContainerShown = false;
+
+        function toggleVideoContainer() {
+            const videoContainer = document.getElementById('videoContainer');
+            const videoButtons = document.getElementById('videoButtons');
+            const toggleButton = document.getElementById('toggleButton');
+
+            // Toggle the visibility of the video container and video buttons
+            if (isVideoContainerShown) {
+                videoContainer.style.display = 'none';
+                videoButtons.style.display = 'none';
+                toggleButton.textContent = 'Parking';
+            } else {
+                videoContainer.style.display = 'block';
+                videoButtons.style.display = 'block';
+                toggleButton.textContent = 'Return';
+            }
+
+            isVideoContainerShown = !isVideoContainerShown;
+        }
+
+        function changeVideo(videoUrl) {
+            // Change the video source to the selected video URL
+            document.getElementById('videoPlayer').src = videoUrl;
+        }
+    </script>
+</body>
+</html>
