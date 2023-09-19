@@ -6,5 +6,5 @@ Faster R-CNN model is deployed to detect car in the parking, the output is boxes
 
 The precision of the program depends on the deep learning's robustness. So we can improve the precision by training the model with particular datasets.
 
-The program has reference from : 
-https://github.com/tempdata73/parking
+The program has reference from the author: 
+https://github.com/tempdata73
