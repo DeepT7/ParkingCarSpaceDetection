@@ -6,7 +6,7 @@ Faster R-CNN model is deployed to detect car in the parking, the output is boxes
 
 The precision of the program depends on the deep learning's robustness. So we can improve the precision by training the model with particular datasets.
 
-I have train the deep learning model on custom data so that it can perform on low-light conditions much better.
+I have trained the deep learning model on the custom data so that it can perform on low-light conditions much better.
 
 The program has reference from the author: 
 https://github.com/tempdata73
