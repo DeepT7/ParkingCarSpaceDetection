@@ -9,6 +9,7 @@ import datetime
 import psycopg2
 import argparse
 import numpy as np
+import torch 
 
 from shapely import wkb
 from shapely.wkb import loads
@@ -30,7 +31,9 @@ def main(args):
     # cur = conn.cursor()
 
     # load detection model
-    model = detection.load_inference_resnet50()
+    # model = detection.load_inference_resnet50()
+    model = torch.hub.load('ultralytics/yolov5', 'custom', 'trained_model/best9.pt')
+
 
     # fetch areas that will be analyzed
     spots = fetch_parking_spots()
@@ -57,7 +60,7 @@ def main(args):
             #reset_occupancy(args.cam_ids)
 
             # detect which spots are occupied
-            bboxes = detection.detect_objects(
+            bboxes = detection.detect_cars(
                 model, frame, [3, 4], threshold=0.5)
             occupied_spots = fetch_occupied_spots(spots, bboxes)
 
