@@ -12,6 +12,12 @@ Here is the video of car detection after training model:
 https://github.com/DeepT7/ParkingCarSpaceDetection/assets/109886442/339747f4-b2aa-4fdf-a8c8-d718d96067a3
 
 
+And the final video: 
+
+https://github.com/DeepT7/ParkingCarSpaceDetection/assets/109886442/0f944583-1be1-40a9-bd0e-bc3c10c6c123
+
+
+
 The program has reference from the author: 
 
 https://github.com/tempdata73
