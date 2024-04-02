@@ -1,7 +1,7 @@
 # ParkingCarSpaceDetection
 
-This project just deploys the model I trained on my custom dataset to perform better on low-light, rainy and low resolution conditions. Here is the repository where I preprocessed data and trained model: 
-https://github.com/DeepT7/car_detection_in_low-light.git
+### This project just deploys the model I trained on my custom dataset to perform better on low-light, rainy and low resolution conditions. Here is the repository where I preprocessed data and trained model: 
+### https://github.com/DeepT7/car_detection_in_low-light.git
 
 This is a part of smart parking car project.
 https://github.com/unt4m1nh/EasyParking
