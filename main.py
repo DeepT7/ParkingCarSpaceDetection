@@ -19,6 +19,7 @@ from scipy.spatial import cKDTree
 from utility.config import config
 from utility import detection
 
+import video_enhancement
 
 file_path = "./data/coordinates.csv"
 
@@ -53,7 +54,7 @@ def main(args):
         if not ret or key == ord("q"):
             print("Video stopped")
             break
-
+        # frame = video_enhancement.enhance_image(frame)
         # check if parking spots are occupied every nth frame
         if frame_counter % detection_interval == 0:
             # set occupancy for each spot to false
