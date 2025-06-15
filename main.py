@@ -6,12 +6,13 @@ import csv
 import json
 import time
 import datetime
-import psycopg2
 import argparse
 import numpy as np
 import torch 
+from ultralytics import YOLO 
+from enhancer.enhancer_model import enhance_image, load_enhancer
+import sys 
 
-from shapely import wkb
 from shapely.wkb import loads
 from shapely.geometry import box, Polygon, MultiPolygon, Point
 from scipy.spatial import cKDTree
@@ -19,9 +20,14 @@ from scipy.spatial import cKDTree
 from utility.config import config
 from utility import detection
 
-import video_enhancement
+# import video_enhancement
 
 file_path = "./data/coordinates.csv"
+
+def calculate_brightness(frame):
+    gray =cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+    brightness = np.mean(gray)
+    return brightness
 
 def main(args):
     global conn, cur
@@ -32,9 +38,9 @@ def main(args):
     # cur = conn.cursor()
 
     # load detection model
-    # model = detection.load_inference_resnet50()
-    model = torch.hub.load('ultralytics/yolov5', 'custom', 'trained_model/best9.pt')
-
+    model = YOLO('trained_model\\detection\\best.pt')
+    # load enhancement model
+    model_restoration = load_enhancer()
 
     # fetch areas that will be analyzed
     spots = fetch_parking_spots()
@@ -57,12 +63,20 @@ def main(args):
         # frame = video_enhancement.enhance_image(frame)
         # check if parking spots are occupied every nth frame
         if frame_counter % detection_interval == 0:
+            brightness = calculate_brightness(frame)
+            print(f"Brightness: {brightness}")
             # set occupancy for each spot to false
-            #reset_occupancy(args.cam_ids)
+            if brightness < 50:
+                # reset occupancy in table
+                enhance_image(frame, model_restoration)
+                frame = cv2.imread("enhanced_image.png")
+                print("Enhancing image", frame.shape)
+                print("Imange type:", type(frame))
+                print("dtype:", frame.dtype)
 
             # detect which spots are occupied
             bboxes = detection.detect_cars(
-                model, frame, [3, 4], threshold=0.5)
+                model, frame, [3,4], threshold=0.25)
             occupied_spots = fetch_occupied_spots(spots, bboxes)
 
             # update occupancy in table for each spot
@@ -163,9 +177,8 @@ def update_occupancy(spots, occupied_spots):
     #occupied_geometry = [Point(coords) for coords in occupied_spots]
 
     occupancy_status = []
-
     for spot in spots:
-        is_occupied = any(spot.intersects(loads(occupied_spot[0])) for occupied_spot in occupied_spots)
+        is_occupied = any(spot.intersects(loads(bytes.fromhex(occupied_spot[0]))) for occupied_spot in occupied_spots)
         #is_occupied = any(occupied_spot.intersects(spot) for occupied_spot in occupied_spots)
         #is_occupied = any(spot.intersects(occupied_spot) for occupied_spot in occupied_spots )
         occupancy_status.append(is_occupied)

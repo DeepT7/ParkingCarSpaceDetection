@@ -1,6 +1,6 @@
 import torch
 import numpy as np
-
+import cv2 
 from torchvision import transforms
 from torchvision.models.detection import fasterrcnn_resnet50_fpn
 from torchvision.models.detection import fasterrcnn_resnet50_fpn_v2
@@ -50,25 +50,39 @@ from torchvision.models.detection import fasterrcnn_mobilenet_v3_large_320_fpn
 
 def detect_cars(model, image, coco_cat_names, threshold = 0):
     # Run inference 
-    results = model(image)
+    results = model(image)[0]# get the first result for (for single image)
+    # Get bounding box
+    boxes = results.boxes.xyxy.cpu().numpy() # Bounding boxes (x1, y1, x2, y2)
+    scores = results.boxes.conf.cpu().numpy() # Confidence scores
+    class_ids = results.boxes.cls.cpu().numpy() # Class IDs 
+    # boxes, confidences, class_ids = results.pred[0][:, :4], results.pred[0][:, 4], results.pred[0][:, 5]
 
-    # Get bounding box 
-    boxes, confidences, class_ids = results.pred[0][:, :4], results.pred[0][:, 4], results.pred[0][:, 5]
+    # Filter out the class_id = [3, 4] and ids 
+    filtered_boxes = []
 
-    # Filter out the class_id = [3, 4]
-    relevant_indices = np.where(np.isin(class_ids, coco_cat_names))
+    # Draw boudning boxes on the image
 
-    filtered_boxes = boxes[relevant_indices]
+    for box, score, class_id in zip(boxes, scores, class_ids):
+        if score >= threshold and class_id in coco_cat_names:
+            filtered_box = list(map(int, box))
+            filtered_boxes.append(filtered_box)
 
-    for box in filtered_boxes:
-        box = list(map(int, box))
-
+            # Draw rectangle on the image
+            cv2.rectangle(image, (filtered_box[0], filtered_box[1]), (filtered_box[2], filtered_box[3]), (255, 0, 0), 2)
+            # Put label 
+            label = f"ID: {class_id}" 
+            cv2.putText(image, label, (filtered_box[0], filtered_box[1] - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0,255,0),2)
+    
+    # save the image with bounding boxes
+    cv2.imwrite("output_image.jpg", image)
     return filtered_boxes
 
-
-
-
 def fetch_centroids(bounding_boxes):
+    print("Bounding boxes:", bounding_boxes)
+    bounding_boxes = np.array(bounding_boxes)
+
+    if bounding_boxes.ndim == 1:
+        bounding_boxes = np.expand_dims(bounding_boxes, axis=0)
     centroids = np.c_[
         bounding_boxes[:, [0, 2]].mean(axis=1),
         bounding_boxes[:, [1, 3]].mean(axis=1)]
