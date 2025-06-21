@@ -66,17 +66,17 @@ def main(args):
             brightness = calculate_brightness(frame)
             print(f"Brightness: {brightness}")
             # set occupancy for each spot to false
-            if brightness < 50:
-                # reset occupancy in table
-                enhance_image(frame, model_restoration)
-                frame = cv2.imread("enhanced_image.png")
-                print("Enhancing image", frame.shape)
-                print("Imange type:", type(frame))
-                print("dtype:", frame.dtype)
+            # if brightness < 50:
+            #     # reset occupancy in table
+            #     enhance_image(frame, model_restoration)
+            #     frame = cv2.imread("enhanced_image.png")
+            #     print("Enhancing image", frame.shape)
+            #     print("Imange type:", type(frame))
+            #     print("dtype:", frame.dtype)
 
             # detect which spots are occupied
             bboxes = detection.detect_cars(
-                model, frame, [3,4], threshold=0.25)
+                model, frame, [2,7], threshold=0.25)
             occupied_spots = fetch_occupied_spots(spots, bboxes)
 
             # update occupancy in table for each spot
